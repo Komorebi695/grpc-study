@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 	pb "grpcStudy/hello-server/proto"
 	"log"
 )
@@ -20,17 +20,18 @@ func (c ClientTokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) 
 
 // RequireTransportSecurity 是否需要基于TLS认证进行安全传输 false -> 不需要
 func (c ClientTokenAuth) RequireTransportSecurity() bool {
-	return false
+	return true
 }
 
 func main() {
-	//creds, err := credentials.NewClientTLSFromFile("D:\\Programming\\ProjectCode\\GO\\src\\grpcStudy\\key\\test.pem",
-	//	"*.xiaojiang.com")
-	//if err != nil {
-	//	return
-	//}
+	creds, err := credentials.NewClientTLSFromFile("D:\\Programming\\ProjectCode\\GO\\src\\grpcStudy\\key\\test.pem",
+		"*.xiaojiang.com")
+	if err != nil {
+		return
+	}
+
 	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	opts = append(opts, grpc.WithTransportCredentials(creds))
 	opts = append(opts, grpc.WithPerRPCCredentials(new(ClientTokenAuth)))
 
 	//连接到server端，此处禁川安全传输，没有加密和验证
